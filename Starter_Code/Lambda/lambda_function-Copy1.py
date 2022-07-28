@@ -124,7 +124,38 @@ def recommend_portfolio(intent_request):
     risk_level = get_slots(intent_request)["riskLevel"]
     source = intent_request["invocationSource"]
 
-    # YOUR CODE GOES HERE!
+def validate_data(birthday, dollars, intent_request):
+    """
+    Validates the data provided by the user.
+    """
+
+    # Validate that the user is over 21 years old
+    if birthday is not None:
+        birth_date = datetime.strptime(birthday, "%Y-%m-%d")
+        age = relativedelta(datetime.now(), birth_date).years
+        if age < 21:
+            return build_validation_result(
+                False,
+                "birthday",
+                "You should be at least 21 years old to use this service, "
+                "please provide a different date of birth.",
+            )
+
+    # Validate the investment amount, it should be > 0
+    if dollars is not None:
+        dollars = parse_float(
+            dollars
+        )  # Since parameters are strings it's important to cast values
+        if dollars <= 0:
+            return build_validation_result(
+                False,
+                "dollars",
+                "The amount to convert should be greater than zero, "
+                "please provide a correct amount in dollars to convert.",
+            )
+
+    # A True results is returned if age or amount are valid
+    return build_validation_result(True, None, None)
 
 
 ### Intents Dispatcher ###
